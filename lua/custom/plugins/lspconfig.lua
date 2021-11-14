@@ -1,29 +1,38 @@
 local M = {}
 
 M.setup_lsp = function(attach, capabilities)
-  local lspconfig = require "lspconfig"
+   local lspconfig = require "lspconfig"
 
-  -- lspservers with default config
+   -- lspservers with default config
 
-  -- local servers = { "html", "cssls", "pyright" }
-  local servers = {"tsserver"}
+   local servers = {"html"}
 
-  for _, lsp in ipairs(servers) do
-    lspconfig[lsp].setup {
-      on_attach = attach,
-      capabilities = capabilities,
-      flags = {
+   for _, lsp in ipairs(servers) do
+      lspconfig[lsp].setup {
+         on_attach = attach,
+         capabilities = capabilities,
+         flags = {
+            debounce_text_changes = 150,
+         },
+      }
+   end
+
+   lspconfig.tsserver.setup {
+     on_attach = function(client, bufnr)
+         attach()
+         client.resolved_capabilities.document_formatting = false
+         vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>fm", "<cmd>lua vim.lsp.buf.formatting_seq_sync()<CR>", {})
+     end,
+     flags = {
         debounce_text_changes = 150,
-      },
-    }
-  end
+     },
+   }
 
   -- from: https://github.com/marwan38/NvChad/blob/main/lua/plugins/configs/lspconfig.lua#L109
 
   local diagnosticls_filetypes = {
     typescript = "eslint",
     typescriptreact = "eslint",
-    php = "phpcs",
   }
 
   local diagnosticls_linters = {
@@ -43,26 +52,11 @@ M.setup_lsp = function(attach, capabilities)
         security = "severity",
       },
       securities = { [2] = "error", [1] = "warning" },
-    },
-    phpcs = {
-      sourceName = "phpcs",
-      command = "./vendor/bin/phpcs",
-      debounce = 100,
-      args = { "--report=emacs", "-s", "-" },
-      offsetLine = 0,
-      offsetColumn = 0,
-      formatLines = 1,
-      formatPattern = {
-        [[^.*:(\d+):(\d+):\s+(.*)\s+-\s+(.*)(\r|\n)*$]],
-        { line = 1, column = 2, security = 3, message = { "[phpcs] ", 4 } },
-      },
-      securities = { error = "error", warning = "warning" },
-      rootPatterns = { ".git", "vendor", "composer.json" },
-    },
+    }
   }
 
   lspconfig.diagnosticls.setup {
-    on_attach = on_attach,
+    on_attach = attach,
     capabilities = capabilities,
     flags = {
       debounce_text_changes = 500,
@@ -71,7 +65,7 @@ M.setup_lsp = function(attach, capabilities)
     init_options = {
       filetypes = diagnosticls_filetypes,
       linters = diagnosticls_linters,
-    },
+    }
   }
 
 end
