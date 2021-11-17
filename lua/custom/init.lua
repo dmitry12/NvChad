@@ -13,7 +13,7 @@ hooks.add("setup_mappings", function(map)
   map("i", "]", "]<C-g>u", opt)
   map("i", "(", ")<C-g>u", opt)
   map("i", "!", "!<C-g>u", opt)
-  map("i", "?", "!<C-g>u", opt)
+  map("i", "?", "?<C-g>u", opt)
   map("i", "$", "$<C-g>u", opt)
   map("i", "_", "_<C-g>u", opt)
 
@@ -38,7 +38,6 @@ hooks.add("setup_mappings", function(map)
   map("n", "<leader>ga", ":diffget //3<CR>", opt)
   map("n", "<leader>gl", ":diffget //3<CR>", opt)
 
-
   --
   map("n", "s", ":w<CR>", opt)
 end)
@@ -58,26 +57,33 @@ hooks.add("install_plugins", function(use)
   use {
     "datawraith/auto_mkdir"
   }
-  use { 
-    "alexghergh/nvim-tmux-navigation", config = function()
-      require'nvim-tmux-navigation'.setup {
-        disable_when_zoomed = true -- defaults to false
-      }
-
-      vim.api.nvim_set_keymap('n', "<c-h>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigateleft()<cr>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap('n', "<c-j>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigatedown()<cr>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap('n', "<c-k>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigateup()<cr>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap('n', "<c-l>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigateright()<cr>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap('n', "<c-\\>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigatelastactive()<cr>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap('n', "<c-space>", ":lua require'nvim-tmux-navigation'.nvimtmuxnavigatenext()<cr>", { noremap = true, silent = true })
-    end
+  use {
+    "tpope/vim-fugitive"
   }
+
+  use { 'alexghergh/nvim-tmux-navigation', config = function()
+    require'nvim-tmux-navigation'.setup {
+      disable_when_zoomed = true -- defaults to false
+    }
+
+    vim.api.nvim_set_keymap('n', "<C-h>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateLeft()<cr>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', "<C-j>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateDown()<cr>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', "<C-k>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateUp()<cr>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', "<C-l>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateRight()<cr>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', "<C-\\>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateLastActive()<cr>", { noremap = true, silent = true })
+  end
+  }
+
   use {
     "jose-elias-alvarez/null-ls.nvim",
     after = "nvim-lspconfig",
     config = function()
       require("custom.plugins.null-ls").setup()
     end,
+  }
+
+  use {
+    "is0n/fm-nvim"
   }
 end)
 
